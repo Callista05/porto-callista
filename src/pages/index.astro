@@ -6,13 +6,12 @@ import '../styles/global.css';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Landing — Portfolio</title>
+    <title>Portfolio Landing Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Nova+Flat&display=swap" rel="stylesheet">
   </head>
   <body class="min-h-screen bg-black overflow-hidden">
     <video id="bgVideo" class="fixed inset-0 w-full h-full object-cover" autoplay muted loop playsinline>
-      <!-- Replace /assets/hero.webm with your uploaded webm file -->
-      <source src="/assets/hero.webm" type="video/webm" />
+      <source src="/assets/landing.webm" type="video/webm" />
       Your browser does not support the video tag.
     </video>
 
@@ -20,8 +19,7 @@ import '../styles/global.css';
 
     <div id="clickBar" class="fixed left-0 right-0 bottom-0 h-24 bg-black text-white flex items-center justify-center cursor-pointer" style="font-family: 'Nova Flat', cursive;">
       <div class="text-center">
-        <div class="text-xl tracking-widest">CLICK ME</div>
-        <div class="mt-1 text-xs">Scroll or click to enter</div>
+        <div class="text-5xl tracking-widest">CLICK ME</div>
       </div>
     </div>
 
@@ -29,7 +27,6 @@ import '../styles/global.css';
       document.getElementById('clickBar').addEventListener('click', function(){
         window.location.href = '/home';
       });
-      // allow Enter key to trigger too
       document.addEventListener('keydown', function(e){
         if(e.key === 'Enter') window.location.href = '/home';
       });
