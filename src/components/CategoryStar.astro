@@ -1,0 +1,108 @@
+---
+/**
+ * A single category "star" in the constellation picker.
+ * Renders the generic star artwork (cream by default, purple on hover) with
+ * an editable text label overlaid on the star's body — so the label is changed
+ * via the `label` prop instead of swapping a baked-in SVG per category.
+ */
+interface Props {
+  /** Slug used for routing + the data-name hook (e.g. "uiux"). */
+  name: string;
+  /** Visible label drawn over the star (e.g. "UI/UX"). */
+  label: string;
+  /** Destination route (e.g. "/uiux"). */
+  href: string;
+  /** Disable the hover color/art swap (matches the old `no-hover` behavior). */
+  noHover?: boolean;
+  /** Mirror the star vertically (long tail points up) while keeping text upright. */
+  flipped?: boolean;
+}
+const { name, label, href, noHover = false, flipped = false } = Astro.props;
+---
+<a class:list={["category-item", { "no-hover": noHover, flipped }]} data-name={name} href={href}>
+  <img class="category-art default" src="/assets/CategoryList/CategoryPutih.svg" alt={label} />
+  <img class="category-art hover" src="/assets/CategoryList/CategoryUngu.svg" alt="" aria-hidden="true" />
+  <span class="category-label">{label}</span>
+</a>
+
+<style>
+  /* ─── Star item: layout + entrance / hover animation ─── */
+  .category-item {
+    position: relative;
+    display: block;
+    width: clamp(180px, 26vw, 380px);
+    aspect-ratio: 375 / 572;
+    text-decoration: none;
+    margin: 0 -5vw;
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                margin 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                opacity 0.4s ease;
+    z-index: 1;
+  }
+
+  .category-item:nth-child(odd).visible {
+    opacity: 1;
+    transform: translateY(17vh) scale(1);
+  }
+
+  .category-item:nth-child(even).visible {
+    opacity: 1;
+    transform: translateY(-17vh) scale(1);
+  }
+
+  .category-item:nth-child(odd).visible:hover {
+    z-index: 10;
+    transform: translateY(17vh) scale(1.15);
+    margin: 0 -1.5vw;
+  }
+
+  .category-item:nth-child(even).visible:hover {
+    z-index: 10;
+    transform: translateY(-17vh) scale(1.15);
+    margin: 0 -1.5vw;
+  }
+
+  /* ─── Star artwork (cream default / purple hover) ─── */
+  .category-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .category-art.hover { opacity: 0; }
+  .category-item:hover .category-art.default { opacity: 0; }
+  .category-item:hover .category-art.hover { opacity: 1; }
+  .category-item.no-hover:hover .category-art.default { opacity: 1; }
+
+  /* Mirror only the artwork; the label is repositioned below, kept upright. */
+  .category-item.flipped .category-art { transform: scaleY(-1); }
+
+  /* ─── Editable label, centered on the star's body ─── */
+  .category-label {
+    position: absolute;
+    top: 32%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    text-align: center;
+    line-height: 1;
+    font-family: 'Nova Flat', cursive;
+    font-size: clamp(0.9rem, 2.2vw, 1.5rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9D2018;
+    pointer-events: none;
+    transition: color 0.25s ease;
+  }
+  .category-item:hover .category-label { color: #EEEBEB; }
+  .category-item.no-hover:hover .category-label { color: #9D2018; }
+
+  /* Flipped star: body cross sits at the mirror of 32% → 68%. */
+  .category-item.flipped .category-label { top: 68%; }
+</style>

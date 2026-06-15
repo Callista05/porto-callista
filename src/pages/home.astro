@@ -1,31 +1,323 @@
 ---
 import '../styles/global.css';
+import CategoryStar from '../components/CategoryStar.astro';
+
+const categories = [
+  { name: 'uiux',         label: 'UI/UX',        href: '/uiux' },
+  { name: 'logo',         label: 'Logo',         href: '/logo', noHover: true, flipped: true },
+  { name: 'photo',        label: 'Photo',        href: '/photo' },
+  { name: 'character',    label: 'Character',    href: '/character', flipped: true },
+  { name: 'illustration', label: 'Illustration', href: '/illustration' },
+  { name: 'motion',       label: 'Motion',       href: '/motion', flipped: true },
+  { name: 'merch',        label: 'Merch',        href: '/merch' },
+];
 ---
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portfolio — Astro + Tailwind</title>
-  </head>
-  <body class="min-h-screen p-8">
-    <header class="max-w-6xl mx-auto">
-      <h1 class="text-4xl font-bold">Portfolio</h1>
-      <p class="mt-2 text-gray-600">A minimal Astro + Tailwind starter for image-forward portfolios.</p>
-    </header>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Callista V Effendi — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nova+Flat&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body { background: #000; font-family: 'Nova Flat', cursive; }
 
-    <main class="max-w-6xl mx-auto mt-8">
-      <section>
-        <h2 class="text-2xl font-semibold mb-4">Gallery</h2>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <div class="bg-gray-100 aspect-[4/3] flex items-center justify-center text-gray-400">Image 1</div>
-          <div class="bg-gray-100 aspect-[4/3] flex items-center justify-center text-gray-400">Image 2</div>
-          <div class="bg-gray-100 aspect-[4/3] flex items-center justify-center text-gray-400">Image 3</div>
-          <div class="bg-gray-100 aspect-[4/3] flex items-center justify-center text-gray-400">Image 4</div>
-        </div>
-      </section>
-    </main>
+    /* ═══════════════════════════════
+       LOADING SCREEN
+    ═══════════════════════════════ */
+    #loading-screen {
+      position: fixed; inset: 0;
+      background: #000;
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+    }
+    
+    #loading-screen.fade-out .loading-star {
+      /* Snappy, explosive curve to fill the screen */
+      animation: starGrow 1.2s cubic-bezier(0.6, -0.28, 0.2, 1.1) forwards;
+    }
 
-    <footer class="max-w-6xl mx-auto mt-12 text-sm text-gray-500">Built with Astro + Tailwind</footer>
-  </body>
+    .loading-star { 
+      width: 160px; 
+      height: 160px;
+      overflow: visible; /* Prevents the massive star from clipping its own borders */
+    }
+
+    .ls-bg   { fill: #100730; }
+    .ls-fill {
+      fill: #3a1789;
+      transform-box: fill-box;
+      transform-origin: bottom center;
+      transform: scaleY(0);
+      animation: waterRise 1s ease-out 0.25s forwards;
+    }
+    
+    @keyframes waterRise {
+      from { transform: scaleY(0); }
+      to   { transform: scaleY(1); }
+    }
+    @keyframes starGrow {
+      0% { transform: scale(1); }
+      20% { transform: scale(0.8); } /* Anticipation shrink */
+      100% { transform: scale(60); } /* Explodes to fill screen */
+    }
+
+    /* ═══════════════════════════════
+       HOME VIEW
+    ═══════════════════════════════ */
+    #home-view {
+      position: fixed; inset: 0;
+      background-color: #3a1789;
+      display: none;
+      /* Smooth transition when fading to space */
+      transition: background-color 0.8s ease, opacity 0.4s ease; 
+    }
+    
+    #home-view.hidden { opacity: 0; pointer-events: none; }
+
+    /* Exiting state (fades to black, text floats away) */
+    #home-view.exiting {
+      background-color: #000; 
+    }
+    #home-view.exiting .home-year,
+    #home-view.exiting .home-title-block,
+    #home-view.exiting .home-quote,
+    #home-view.exiting #home-arrow {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    #home-view.exiting .smog-img {
+      opacity: 0;
+    }
+
+    /* Smog overlay */
+    .smog-img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: left top;
+      pointer-events: none; 
+      user-select: none;
+      opacity: 0;
+      animation: smogFadeIn 1.1s ease-out forwards;
+      transition: opacity 0.8s ease;
+    }
+    @keyframes smogFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Base transitions for text elements so they float away nicely */
+    .home-year, .home-title-block, .home-quote, #home-arrow {
+      transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform: translateY(0);
+    }
+
+    /* Text elements */
+    .home-year {
+      position: absolute; top: 1.8rem; left: 2.5rem;
+      color: #eeebeb; font-size: 0.82rem; letter-spacing: 0.06em;
+    }
+    .home-title-block {
+      position: absolute; right: 5rem; top: 50%;
+      transform: translateY(-52%); text-align: right;
+    }
+    .home-name {
+      display: block; color: #eeebeb;
+      font-size: 0.95rem; letter-spacing: 0.38em; text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .home-title {
+      display: block; color: #eeebeb;
+      font-size: 5.8rem; letter-spacing: 0.08em;
+      text-transform: uppercase; line-height: 0.92;
+    }
+    .home-quote {
+      position: absolute; bottom: 2.5rem; left: 2.5rem;
+      color: #eeebeb; font-size: 0.72rem; max-width: 290px;
+      line-height: 1.65; font-style: italic; opacity: 0.82;
+    }
+
+    #home-arrow:hover { opacity: 1; }
+
+    /* ═══════════════════════════════
+       STARS VIEW
+    ═══════════════════════════════ */
+    #stars-view {
+      position: fixed; inset: 0;
+      background: transparent; /* Now relies on the body/home-view black background */
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      z-index: 50;
+      transition: opacity 0.5s ease;
+    }
+    #stars-view.visible { opacity: 1; pointer-events: all; }
+
+    /* Back arrow */
+    #stars-back {
+      position: absolute; top: 2rem; left: 2.5rem;
+      cursor: pointer; opacity: 0.72;
+      transition: opacity 0.2s;
+      transform: rotate(180deg);
+    }
+    #stars-back:hover { opacity: 1; }
+
+
+    /* ─── Category Setup (Flexbox for overlapping & pushing) ─── */
+    .category-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      flex-wrap: nowrap;
+    }
+
+    /* (Per-star layout, art swap & label styles live in CategoryStar.astro) */
+
+    /* About Me link */
+    .about-me-link {
+      position: absolute;
+      left: 50%;
+      bottom: 1.2rem;
+      transform: translateX(-50%);
+      width: min(94px, 20vw);
+      height: auto;
+      opacity: 0.92;
+      text-decoration: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .about-me-link:hover {
+      opacity: 1;
+      transform: translateX(-50%) scale(1.03);
+    }
+    .about-me-link img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <svg class="loading-star" viewBox="0 0 282 282" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <clipPath id="ls-clip">
+        <path d="M141 0C141 0 148.78 72.6141 179.083 102.917C209.386 133.22 282 141 282 141C282 141 209.386 148.78 179.083 179.083C148.78 209.386 141 282 141 282C141 282 133.22 209.386 102.917 179.083C72.6141 148.78 0 141 0 141C0 141 72.6141 133.22 102.917 102.917C133.22 72.6141 141 0 141 0Z"/>
+      </clipPath>
+    </defs>
+    <path class="ls-bg" d="M141 0C141 0 148.78 72.6141 179.083 102.917C209.386 133.22 282 141 282 141C282 141 209.386 148.78 179.083 179.083C148.78 209.386 141 282 141 282C141 282 133.22 209.386 102.917 179.083C72.6141 148.78 0 141 0 141C0 141 72.6141 133.22 102.917 102.917C133.22 72.6141 141 0 141 0Z"/>
+    <g clip-path="url(#ls-clip)">
+      <rect class="ls-fill" x="-2" y="-2" width="286" height="286"/>
+    </g>
+  </svg>
+</div>
+
+<div id="home-view">
+  <img class="smog-img" id="smog" src="/assets/home/Smog.svg" alt="" />
+  <span class="home-year">2023–2026</span>
+  <div class="home-title-block">
+    <span class="home-name">Callista V Effendi</span>
+    <span class="home-title">PORTOFOLIO</span>
+  </div>
+  <p class="home-quote">
+    "Designing that tells stories, evokes emotion, and creates meaningful interactions."
+  </p>
+  <svg id="home-arrow" viewBox="0 0 24 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="position: absolute; bottom: 2.5rem; right: 2.5rem; width: 80px; height: 110px; cursor: pointer; opacity: 0.88;">
+    <path d="M0 16.668H21M9.84375 32.168L21 16.668L9.84375 1.16797" stroke="#EEEBEB" stroke-width="4"/>
+  </svg>
+</div>
+
+<div id="stars-view">
+  <a id="stars-back" href="/home" aria-label="Back to home">
+    <svg width="24" height="34" viewBox="0 0 24 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 16.668H21M9.84375 32.168L21 16.668L9.84375 1.16797" stroke="#EEEBEB" stroke-width="3.5"/>
+    </svg>
+  </a>
+
+  <div class="category-stage" id="category-stage">
+    {categories.map((c) => (
+      <CategoryStar name={c.name} label={c.label} href={c.href} noHover={c.noHover} flipped={c.flipped} />
+    ))}
+  </div>
+
+  <a class="about-me-link" href="/about">
+    <img src="/assets/CategoryList/Text About me.svg" alt="About me" />
+  </a>
+</div>
+
+<script>
+(function () {
+  const loadingEl = document.getElementById('loading-screen');
+  const homeView = document.getElementById('home-view');
+  const starsView = document.getElementById('stars-view');
+  const categoryItems = Array.from(document.querySelectorAll('.category-item'));
+  const starsBack = document.getElementById('stars-back');
+  const homeArrow = document.getElementById('home-arrow');
+
+  // ── 1. LOADING SCREEN ──
+  setTimeout(() => {
+    loadingEl.classList.add('fade-out');
+    
+    setTimeout(() => {
+      loadingEl.style.display = 'none';
+      homeView.style.display = 'block';
+    }, 1100); // Waits for the star to fully expand
+  }, 1500); // Waits for the water fill
+
+  // ── 2. NAVIGATION: HOME -> STARS ──
+  homeArrow.addEventListener('click', enterStars);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !starsView.classList.contains('visible') && homeView.style.display === 'block') enterStars();
+  });
+
+  function enterStars() {
+    // Triggers text fly-out and fade to black
+    homeView.classList.add('exiting'); 
+
+    setTimeout(() => {
+      homeView.classList.add('hidden');
+      starsView.classList.add('visible');
+
+      // Stagger constellation in
+      categoryItems.forEach((item, i) => {
+        setTimeout(() => item.classList.add('visible'), i * 90);
+      });
+    }, 800); // Waits for the fade to black to finish
+  }
+
+  // ── 3. NAVIGATION: STARS -> HOME ──
+  starsBack.addEventListener('click', (event) => {
+    event.preventDefault();
+    exitStars();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && starsView.classList.contains('visible')) exitStars();
+  });
+
+  function exitStars() {
+    categoryItems.forEach((item) => item.classList.remove('visible'));
+    
+    setTimeout(() => {
+      starsView.classList.remove('visible');
+      homeView.classList.remove('hidden');
+      
+      // Slight delay ensures DOM paints before reversing the 'exiting' animation
+      setTimeout(() => {
+        homeView.classList.remove('exiting');
+      }, 50); 
+    }, 500);
+  }
+})();
+</script>
+</body>
 </html>

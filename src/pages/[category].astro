@@ -1,0 +1,1285 @@
+---
+import '../styles/global.css';
+
+export async function getStaticPaths() {
+  return ['uiux','logo','photo','character','illustration','motion','merch'].map(c => ({
+    params: { category: c }
+  }));
+}
+
+const { category } = Astro.params;
+
+type Project = {
+  id: string; num: string; name: string; year: string; tag: string;
+  /* Full baked layout (title/desc/fan are inside the SVG) */
+  screen: string;
+  /* uiux: hero device that bobs above the title */
+  asset?: string;
+  asetX?: number; asetY?: number; asetW?: number;
+  /* character: overlaid title image + switchable portrait variants */
+  nama?: string;
+  variants?: string[];
+};
+type CatData = { label: string; projects: Project[] };
+
+/* Numbered variant buttons (filenames are inconsistently cased) + selected star */
+const tombolButtons = [
+  '/assets/character/Tombol 1.svg',
+  '/assets/character/tombol 2.svg',
+  '/assets/character/Tombol 3.svg',
+  '/assets/character/Tombol 4.svg',
+  '/assets/character/Tombol 5.svg',
+  '/assets/character/Tombol 6.svg',
+  '/assets/character/Tombol 7.svg',
+  '/assets/character/Tombol 8.svg',
+];
+const bintangSrc = '/assets/character/Button bintang.svg';
+
+const allData: Record<string, CatData> = {
+  uiux: {
+    label: 'UI/UX',
+    projects: [
+      {
+        id: 'feywatch', num: '01', name: 'FEYWATCH', year: '2025',
+        tag: '',
+        screen: '/assets/uiux/01 Feywatch/Screen Feywatch.svg',
+        asset:  '/assets/uiux/01 Feywatch/Aset Feywatch.svg',
+        asetX: 32, asetY: 32, asetW: 30,
+      },
+      {
+        id: 'kosanbintang', num: '02', name: 'KOSAN BINTANG', year: '2025',
+        tag: '',
+        screen: '/assets/uiux/02 Kosan Bintang/Screen Kosan Bintang.svg',
+        asset:  '/assets/uiux/02 Kosan Bintang/Aset Kosan Bintang.svg',
+        asetX: 33, asetY: 31, asetW: 40,
+      },
+      {
+        id: 'byland', num: '03', name: 'BYLAND', year: '2025',
+        tag: '',
+        screen: '/assets/uiux/03 Byland/Screnn Byland.svg',
+        asset:  '/assets/uiux/03 Byland/Aset Byland.svg',
+        asetX: 33, asetY: 31, asetW: 40,
+      },
+      {
+        id: 'usahakita', num: '04', name: 'USAHAKITA', year: '2026',
+        tag: '',
+        screen: '/assets/uiux/04 Usahakita/Screen Usahakita.svg',
+        asset:  '/assets/uiux/04 Usahakita/Aset UsahaKIta.svg',
+        asetX: 30, asetY: 31, asetW: 30,
+      },
+      {
+        id: 'planty', num: '05', name: 'PLANTY', year: '2026',
+        tag: '',
+        screen: '/assets/uiux/05 Planty/Screen planty.svg',
+        asset:  '/assets/uiux/05 Planty/Aset Planty.svg',
+        asetX: 33, asetY: 32, asetW: 20,
+      },
+    ],
+  },
+  logo: {
+    label: 'LOGO',
+    projects: [
+      {
+        id: 'guraku', num: '01', name: 'GURAKU', year: '2024',
+        tag: '',
+        screen: '/assets/logo/01 Guraku/Screen Guraku.svg',
+        asset:  '', asetX: 0, asetY: 0, asetW: 0,
+      },
+      {
+        id: 'choix', num: '02', name: 'CHOIX', year: '2026',
+        tag: '',
+        screen: '/assets/logo/02 Choix/Screen Choix.svg',
+        asset:  '', asetX: 0, asetY: 0, asetW: 0,
+      },
+    ],
+  },
+  photo:        { label: 'PHOTO',        projects: [] },
+  character: {
+    label: 'CHARACTER',
+    projects: [
+      {
+        id: 'kidjo', num: '01', name: 'KIDJO', year: '2025', tag: '',
+        screen: '/assets/character/01 Kidjo/Kidjo screen.svg',
+        nama:   '/assets/character/01 Kidjo/Kidjo nama.svg',
+        variants: [],
+      },
+      {
+        id: 'yokai', num: '02', name: 'YOKAI UKJ', year: '2025', tag: '',
+        screen: '/assets/character/02 Yokai UKJ/Yokai screen.svg',
+        nama:   '/assets/character/02 Yokai UKJ/Yokai nama.svg',
+        variants: [
+          '/assets/character/02 Yokai UKJ/yokai/Yokai 1.svg',
+          '/assets/character/02 Yokai UKJ/yokai/Yokai 2.svg',
+          '/assets/character/02 Yokai UKJ/yokai/Yokai 3.svg',
+          '/assets/character/02 Yokai UKJ/yokai/Yokai 4.svg',
+          '/assets/character/02 Yokai UKJ/yokai/Ykai 5.svg',
+          '/assets/character/02 Yokai UKJ/yokai/Yokai 6.svg',
+        ],
+      },
+      {
+        id: 'ichinose', num: '03', name: 'ICHINOSE AOI', year: '2025', tag: '',
+        screen: '/assets/character/03 Ichinose aoi/Screen ichinose.svg',
+        nama:   '/assets/character/03 Ichinose aoi/Nama ichinose.svg',
+        variants: [
+          '/assets/character/03 Ichinose aoi/ichinose/Ichinose 1.svg',
+          '/assets/character/03 Ichinose aoi/ichinose/Ichinose 2.svg',
+          '/assets/character/03 Ichinose aoi/ichinose/Ichinose 3.svg',
+          '/assets/character/03 Ichinose aoi/ichinose/Ichinose 4.svg',
+          '/assets/character/03 Ichinose aoi/ichinose/Ichinose 5.svg',
+          '/assets/character/03 Ichinose aoi/ichinose/Ichinose 6.svg',
+          '/assets/character/03 Ichinose aoi/ichinose/Ichinose 7.svg',
+        ],
+      },
+      {
+        id: 'kujaya', num: '04', name: 'KU JAYA HYANG', year: '2025', tag: '',
+        screen: '/assets/character/04 Ku jaya hyang/Screen Ku jaya.svg',
+        nama:   '/assets/character/04 Ku jaya hyang/Nama Ku jaya.svg',
+        variants: [
+          '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 1.svg',
+          '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 2.svg',
+          '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 3.svg',
+          '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 4.svg',
+          '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 5.svg',
+          '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 6.svg',
+          '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 7.svg',
+          '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 8.svg',
+        ],
+      },
+      {
+        id: 'fujiwara', num: '05', name: 'FUJIWARA HARU', year: '2025', tag: '',
+        screen: '/assets/character/05 Fujiwara haru/Screen Fujiwara haru.svg',
+        nama:   '/assets/character/05 Fujiwara haru/Nama Fujiwara haru.svg',
+        variants: [
+          '/assets/character/05 Fujiwara haru/Fujiwara/Fujiwara 1.svg',
+          '/assets/character/05 Fujiwara haru/Fujiwara/Fujiwara 2.svg',
+          '/assets/character/05 Fujiwara haru/Fujiwara/Fujiwara 3.svg',
+          '/assets/character/05 Fujiwara haru/Fujiwara/Fujiwara 4.svg',
+          '/assets/character/05 Fujiwara haru/Fujiwara/Fujiwara 5.svg',
+          '/assets/character/05 Fujiwara haru/Fujiwara/Fujiwara 6.svg',
+          '/assets/character/05 Fujiwara haru/Fujiwara/Fujiwara 7.svg',
+        ],
+      },
+      {
+        id: 'mumei', num: '06', name: 'MUMEI', year: '2025', tag: '',
+        screen: '/assets/character/06 Mumei/Screen Mumei.svg',
+        nama:   '/assets/character/06 Mumei/Nama Mumei.svg',
+        variants: [
+          '/assets/character/06 Mumei/Mumei/Mumei 1.svg',
+          '/assets/character/06 Mumei/Mumei/Mumei 2.svg',
+          '/assets/character/06 Mumei/Mumei/Mumei 3.svg',
+          '/assets/character/06 Mumei/Mumei/Mumei 4.svg',
+          '/assets/character/06 Mumei/Mumei/Mumei 5.svg',
+          '/assets/character/06 Mumei/Mumei/Mumei 6.svg',
+        ],
+      },
+      {
+        id: 'adhesive', num: '07', name: 'ADHESIVE', year: '2025', tag: '',
+        screen: '/assets/character/07 Adhesive/Adhesive screen_.svg',
+        nama:   '/assets/character/07 Adhesive/Adehesive nama.svg',
+        variants: [
+          '/assets/character/07 Adhesive/Adhesive/Travis 1.svg',
+          '/assets/character/07 Adhesive/Adhesive/Tikky 2.svg',
+          '/assets/character/07 Adhesive/Adhesive/Sid 3.svg',
+          '/assets/character/07 Adhesive/Adhesive/Zinc 4.svg',
+        ],
+      },
+      {
+        id: 'prima', num: '08', name: 'PRIMA', year: '2025', tag: '',
+        screen: '/assets/character/08 Prima/Prima screen.svg',
+        nama:   '/assets/character/08 Prima/Prima nama.svg',
+        variants: [],
+      },
+    ],
+  },
+  illustration: { label: 'ILLUSTRATION', projects: [] },
+  motion:       { label: 'MOTION',       projects: [] },
+  merch:        { label: 'MERCH',        projects: [] },
+};
+
+const data: CatData = allData[category as string] ?? { label: (category as string ?? '').toUpperCase(), projects: [] };
+const projectsJSON = JSON.stringify(data.projects);
+
+/* Motion is a special horizontal-scroll timeline (circles + expandable pills),
+   not the spinner/showcase used by the other categories. */
+const isMotion = category === 'motion';
+type MotionItem =
+  | { type: 'circle'; src: string }
+  | { type: 'project'; tutup: string; buka: string };
+/* Illustration & photo are the same pannable collage (blurred tiles that
+   clear on hover, open full on click + year/title markers) — only the assets
+   and arrangement differ, so both are driven by one config table. */
+type IlusTile = { n: number; x: number; y: number };
+type IlusMarker = { src: string; x: number; y: number; wide: boolean };
+type CollageCfg = {
+  dir: string; word: string; clearDir: string;   // path parts (folders/suffixes differ)
+  wide: number[]; tiles: IlusTile[]; markers: IlusMarker[];
+};
+const collageConfigs: Record<string, CollageCfg> = {
+  /* Clean 6-col × 5-row grid: cols ~9/24/39/54/69/84, rows ~12/31/50/69/88.
+     Wide tiles sit between two cols, tall tiles between two rows. */
+  illustration: {
+    dir: 'illustration', word: 'ilus', clearDir: 'Nggak blur',
+    wide: [2, 7, 9, 12],
+    tiles: [
+      { n: 1,  x: 24,   y: 12 },   { n: 2,  x: 46.5, y: 12 },   { n: 3,  x: 84, y: 12 },
+      { n: 4,  x: 9,    y: 40.5 }, { n: 5,  x: 24,   y: 31 },   { n: 6,  x: 69, y: 31 }, { n: 7, x: 86, y: 31 },
+      { n: 8,  x: 39,   y: 50 },   { n: 9,  x: 76.5, y: 50 },
+      { n: 10, x: 9,    y: 78.5 }, { n: 11, x: 24,   y: 78.5 }, { n: 12, x: 46.5, y: 69 }, { n: 13, x: 69, y: 69 }, { n: 14, x: 84, y: 69 },
+      { n: 15, x: 39,   y: 88 },   { n: 16, x: 54,   y: 88 },
+    ],
+    markers: [
+      { src: '/assets/illustration/2023.svg', x: 9,  y: 12, wide: false },
+      { src: '/assets/illustration/2024.svg', x: 69, y: 12, wide: false },
+      { src: '/assets/illustration/2025.svg', x: 24, y: 50, wide: false },
+      { src: '/assets/illustration/2026.svg', x: 54, y: 50, wide: false },
+      { src: '/assets/illustration/Tulisan Ilustrasi.svg', x: 46.5, y: 31, wide: true },
+    ],
+  },
+  /* Photography has no year SVGs — reuse illustration's 2024/2025. */
+  photo: {
+    dir: 'photography', word: 'photo', clearDir: 'nggak blur',
+    wide: [3, 9, 14, 15, 16],   // tall = 1,4,12; rest circles
+    tiles: [
+      { n: 1,  x: 9,    y: 21.5 }, { n: 2,  x: 84,   y: 12 },   { n: 3,  x: 46.5, y: 12 }, { n: 4, x: 69, y: 21.5 },
+      { n: 5,  x: 24,   y: 31 },   { n: 6,  x: 84,   y: 31 },
+      { n: 7,  x: 24,   y: 50 },   { n: 8,  x: 69,   y: 50 },   { n: 9,  x: 46.5, y: 50 }, { n: 12, x: 84, y: 59.5 },
+      { n: 14, x: 16.5, y: 69 },   { n: 15, x: 46.5, y: 69 },   { n: 10, x: 69, y: 69 },
+      { n: 11, x: 9,    y: 88 },   { n: 16, x: 31.5, y: 88 },   { n: 13, x: 54, y: 88 },
+    ],
+    markers: [
+      { src: '/assets/illustration/2024.svg', x: 24, y: 12, wide: false },
+      { src: '/assets/illustration/2025.svg', x: 9,  y: 50, wide: false },
+      { src: '/assets/photography/Photography.svg', x: 46.5, y: 31, wide: true },
+    ],
+  },
+};
+const collageCfg = collageConfigs[category as string] ?? null;
+const isCollage = !!collageCfg;
+const ilusBlur  = (n: number) => `/assets/${collageCfg!.dir}/Blur/${n} ${collageCfg!.word} blur.svg`;
+const ilusClear = (n: number) => `/assets/${collageCfg!.dir}/${collageCfg!.clearDir}/${n} ${collageCfg!.word}.svg`;
+const ilusFull  = (n: number) => `/assets/${collageCfg!.dir}/Full/${n} ${collageCfg!.word} full.svg`;
+const wideSet = new Set(collageCfg?.wide ?? []);
+const ilusTiles = collageCfg?.tiles ?? [];
+const ilusMarkers = collageCfg?.markers ?? [];
+
+const isMerch = category === 'merch';
+type Swap = { ungu: string; real: string };
+type MerchItem =
+  | { kind: 'keychain'; ungu: string; real: string }
+  | { kind: 'strap'; pins: Swap[] }
+  | { kind: 'paper'; stickers: Swap[] };
+const g = (n: string, r: string): MerchItem => ({ kind: 'keychain',
+  ungu: `/assets/merch/Ganci/Ungu/${n}`, real: `/assets/merch/Ganci/Nggak ungu/${r}` });
+const pin = (u: string, r: string): Swap => ({
+  ungu: `/assets/merch/Pin/Ungu/${u}`, real: `/assets/merch/Pin/Nggak ungu/${r}` });
+const stk = (u: string, r: string): Swap => ({
+  ungu: `/assets/merch/sticker/Ungu/${u}`, real: `/assets/merch/sticker/Nggak ungu/${r}` });
+const merchItems: MerchItem[] = [
+  g('Ai ungu.svg', 'Ai ganci.svg'),
+  g('Conan ungu.svg', 'Conan ganci.svg'),
+  g('mana ungu.svg', 'mana ganci.svg'),
+  g('Rito ungu.svg', 'Rito ganci.svg'),
+  g('Ungu saiki.svg', 'saiki ganci.svg'),
+  g('Wen ungu.svg', 'Wen ganci.svg'),
+  { kind: 'strap', pins: [ pin('Akai ungu.svg', 'Akai pin.svg'),       pin('Amuro ungu.svg', 'Amuro pin.svg') ] },
+  { kind: 'strap', pins: [ pin('Akagi ungu.svg', 'Akagi pin.svg'),     pin('Hibachi ungu.svg', 'Hibachi pin.svg') ] },
+  { kind: 'strap', pins: [ pin('Ittetsu ungu.svg', 'Ittetsu pin.svg'), pin('Usami ungu.svg', 'Usami pin.svg') ] },
+  { kind: 'paper', stickers: [ stk('Kuja ungu.svg', 'Kuja sticker.svg'), stk('Oriens ungu.svg', 'Oriens sticker.svg') ] },
+];
+
+const motionTimeline: MotionItem[] = [
+  { type: 'circle', src: '/assets/motion/Motion.svg' },
+  { type: 'circle', src: '/assets/motion/2024.svg' },
+  { type: 'project',
+    tutup: '/assets/motion/Logo motion/Logo motion tutup.svg',
+    buka:  '/assets/motion/Logo motion/Logo motion buka.svg' },
+  { type: 'circle', src: '/assets/motion/2025.svg' },
+  { type: 'project',
+    tutup: '/assets/motion/Kinnara kinnari/Kinnara kinnari tutup.svg',
+    buka:  '/assets/motion/Kinnara kinnari/Kinnara kinnari buka.svg' },
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{data.label} — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nova+Flat&family=Barlow+Condensed:ital,wght@0,400;0,700;1,700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; overflow:hidden; }
+    body { background:#000; font-family:'Nova Flat', cursive; color:#eeebeb; }
+
+    /* ═══════════ SHARED ═══════════ */
+    .view {
+      position:fixed; inset:0;
+      transition: opacity 0.5s ease;
+    }
+    .view.hidden { opacity:0; pointer-events:none; }
+
+    /* ═══════════ PICKER VIEW ═══════════ */
+    #picker-view { background:#050208; }
+
+    /* Left decorative area — purple swirl (Lingkaran.svg) */
+    .picker-left {
+      position:absolute; left:0; top:0;
+      width:55%; height:100%;
+      overflow:hidden; pointer-events:none;
+    }
+    .swirl-img {
+      position:absolute;
+      left:-14%; top:50%;
+      transform:translateY(-50%);
+      width:90%; height:auto;
+      max-height:130%;
+      object-fit:contain;
+    }
+
+    /* Faint gold constellation lines on the right (Garis kuning.svg) */
+    .gold-lines {
+      position:absolute; right:0; top:0;
+      height:100%; width:auto;
+      pointer-events:none;
+      opacity:.8;
+      z-index:0;
+    }
+
+    /* Panel header: category label + close */
+    .picker-header {
+      position:absolute; top:1.6rem; right:5%;
+      display:flex; align-items:center; gap:1rem;
+      opacity:.7; z-index:5;
+    }
+    .cat-chip {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:.65rem; letter-spacing:.18em; text-transform:uppercase;
+      color:#eeebeb;
+    }
+    .picker-close {
+      background:none; border:none; cursor:pointer;
+      color:#eeebeb; font-size:1rem; opacity:.7;
+      transition:opacity .2s; padding:.2rem .4rem;
+    }
+    .picker-close:hover { opacity:1; }
+
+    /* Carousel fills the screen; the active item is anchored near center. */
+    .carousel-window {
+      position:fixed; inset:0;
+      pointer-events:none;
+    }
+    .carousel-track {
+      position:absolute;
+      top:50%;
+      left:34%;        /* active item (star) sits around screen center */
+      width:0; height:0;
+    }
+
+    /* Each item is placed by JS: rotated about a hub off to the LEFT (the
+       swirl's center), so rows arc around the circle and the wheel appears
+       to spin as you select. The active item is upright + screen-centered.
+       height:0 + align-items:center keeps every row's vertical CENTER pinned
+       to the track origin, so the active item never drifts as you scroll. */
+    .c-item {
+      position:absolute; left:0; top:0; height:0;
+      display:flex; align-items:center; gap:1.3rem;
+      white-space:nowrap;
+      cursor:pointer;
+      transition: transform .6s cubic-bezier(.33,1,.68,1),
+                  opacity   .5s ease;
+    }
+
+    /* Star (white when active / gold otherwise) */
+    .c-star {
+      position:relative; flex-shrink:0;
+      width:1.8rem; height:1.8rem;
+      transition:width .4s, height .4s;
+    }
+    .c-star img {
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      transition:opacity .4s;
+    }
+    .c-star .star-on  { opacity:0; }   /* white, shown when active */
+    .c-star .star-off { opacity:1; }   /* gold */
+
+    .c-num {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700; font-style:italic;
+      flex-shrink:0; text-align:left;
+      font-size:3.2rem; line-height:.85;
+      color:transparent;
+      -webkit-text-stroke:1.6px #ce9566;
+      transition:font-size .4s, color .4s;
+    }
+    .c-info {
+      display:none; flex-direction:column;
+    }
+    .c-name {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+      color:#eeebeb; line-height:1;
+    }
+    .c-year {
+      font-family:'Barlow Condensed',sans-serif;
+      opacity:.6; letter-spacing:.1em; color:#eeebeb;
+      margin-top:.25rem;
+    }
+
+    /* Active item — white star, solid white number (biggest), full info.
+       The number's font-size is sized to roughly match name+year height. */
+    .c-item[data-active="true"] { opacity:1; }
+    .c-item[data-active="true"] .c-star { width:3rem; height:3rem; }
+    .c-item[data-active="true"] .c-star .star-on  { opacity:1; }
+    .c-item[data-active="true"] .c-star .star-off { opacity:0; }
+    .c-item[data-active="true"] .c-num  { font-size:5.5rem; color:#eeebeb; -webkit-text-stroke:0; }
+    .c-item[data-active="true"] .c-name { font-size:2.6rem; }
+    .c-item[data-active="true"] .c-year { font-size:1.2rem; }
+    .c-item[data-active="true"] .c-info { display:flex; }
+
+    /* Adjacent items — gold, outlined number only */
+    .c-item[data-dist="1"] { opacity:.95; }
+    .c-item[data-dist="1"] .c-star { width:1.8rem; height:1.8rem; }
+    .c-item[data-dist="1"] .c-num  { font-size:3.4rem; }
+
+    /* Far items */
+    .c-item[data-dist="2"] { opacity:.45; }
+    .c-item[data-dist="2"] .c-star { width:1.3rem; height:1.3rem; }
+    .c-item[data-dist="2"] .c-num  { font-size:2.3rem; }
+
+    /* Beyond range: hidden */
+    .c-item[data-dist="3"],
+    .c-item[data-dist="4"],
+    .c-item[data-dist="5"] { opacity:0; pointer-events:none; }
+
+    /* Picker footer tag */
+    .picker-footer {
+      position:absolute; bottom:1.8rem; left:50%;
+      transform:translateX(-50%);
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:.7rem; letter-spacing:.22em;
+      text-transform:uppercase; opacity:.5;
+    }
+
+    /* Scroll hint arrows */
+    .scroll-hints {
+      position:absolute; right:5%; top:50%;
+      transform:translateY(-50%);
+      display:flex; flex-direction:column; gap:1rem; opacity:.3;
+      font-size:.75rem;
+    }
+
+    /* ═══════════ SHOWCASE VIEW ═══════════ */
+    #showcase-view { background:#050208; }
+
+    /* Full-bleed background swirl */
+    .sc-bg {
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      pointer-events:none;
+    }
+
+    /* The Screen image drives the stage size: it fills the viewport width and
+       its natural aspect sets the height (each Screen SVG has a slightly
+       different aspect). The stage hugs the image so the Aset can be anchored
+       as a % of the Screen. Vertical overflow is clipped by body overflow. */
+    .sc-stage {
+      position:absolute; top:60%; left:40%;
+      transform:translate(-50%, -50%);
+      width:110vw;
+    }
+    .sc-screen {
+      display:block;
+      width:100%; height:auto;
+    }
+    /* Hero device — bobs slowly above the title. Position is per-project,
+       fed in via --ax/--ay (center %) and --aw (width % of stage). */
+    .sc-aset {
+      position:absolute;
+      left:var(--ax, 30%); top:var(--ay, 31%);
+      width:var(--aw, 38%); height:auto;
+      animation:bob 4.5s ease-in-out infinite;
+      filter:drop-shadow(0 18px 30px rgba(0,0,0,.45));
+    }
+    @keyframes bob {
+      0%,100% { transform:translate(-50%, -50%); }
+      50%     { transform:translate(-50%, calc(-50% - 12px)); }
+    }
+
+    /* ─── Character mode overlays (title + switchable portrait + buttons) ─── */
+    .sc-variant {            /* switchable portrait, left */
+      position:absolute;
+      left:21%; top:34%;
+      width:24%; height:auto;
+      transform:translate(-50%, -50%);
+    }
+    .sc-nama {               /* title image, top-right above the description */
+      position:absolute;
+      left:71%; top:27%;
+      width:32%; height:auto;
+      transform:translate(-50%, -50%);
+    }
+    .sc-anim {               /* animation placeholder, middle */
+      position:absolute;
+      left:45%; top:52%;
+      width:20%; height:46%;
+      transform:translate(-50%, -50%);
+      border:2px dashed rgba(206,149,102,.35);
+      border-radius:1rem;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .sc-anim span {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:.7rem; letter-spacing:.3em;
+      color:rgba(206,149,102,.5);
+    }
+    .sc-buttons {            /* variant buttons, under the portrait */
+      position:absolute;
+      left:21%; top:74%;
+      transform:translateX(-50%);
+      width:17%;
+      display:flex; flex-wrap:wrap; gap:.55rem;
+      justify-content:center;
+    }
+    .sc-btn {
+      position:relative;
+      width:2.4rem; height:2.4rem;
+      background:none; border:none; padding:0; cursor:pointer;
+      transition:transform .15s ease;
+    }
+    .sc-btn img { position:absolute; inset:0; width:100%; height:100%; }
+    .sc-btn .btn-star { opacity:0; }
+    .sc-btn.selected .btn-num  { opacity:0; }
+    .sc-btn.selected .btn-star { opacity:1; }
+    .sc-btn:hover { transform:scale(1.1); }
+
+    /* Back button (top center) */
+    .showcase-back {
+      position:absolute; top:1.4rem; left:50%;
+      transform:translateX(-50%);
+      background:none; border:none; cursor:pointer;
+      opacity:.8; transition:opacity .2s; z-index:5;
+    }
+    .showcase-back img { height:.85rem; width:auto; display:block; }
+    .showcase-back:hover { opacity:1; }
+
+    /* Left / Right nav arrows */
+    .nav-arrow {
+      position:absolute; top:50%;
+      transform:translateY(-50%);
+      background:none; border:none; cursor:pointer;
+      opacity:.7; transition:opacity .2s; z-index:5;
+      padding:.8rem;
+    }
+    .nav-arrow img { width:1.6rem; height:auto; display:block; }
+    .nav-arrow:hover { opacity:1; }
+    .nav-arrow.left  { left:1.8rem; }
+    .nav-arrow.right { right:1.8rem; }
+    .nav-arrow.hidden-arrow { display:none; }
+
+    /* ═══════════ MOTION VIEW (horizontal timeline) ═══════════ */
+    #motion-view { background:#050208; }
+    .motion-bg {
+      position:absolute; inset:0;
+      width:100%; height:100%; object-fit:cover;
+      pointer-events:none;
+    }
+    .motion-back {
+      position:absolute; top:1.4rem; left:50%;
+      transform:translateX(-50%);
+      background:none; border:none; cursor:pointer;
+      opacity:.8; transition:opacity .2s; z-index:5;
+    }
+    .motion-back img { height:.85rem; width:auto; display:block; }
+    .motion-back:hover { opacity:1; }
+
+    .motion-track {
+      position:absolute; inset:0;
+      display:flex; align-items:center; gap:4vw;
+      padding:0 12vw;
+      overflow-x:auto; overflow-y:hidden;
+      scroll-behavior:smooth;
+      -ms-overflow-style:none; scrollbar-width:none;
+    }
+    .motion-track::-webkit-scrollbar { display:none; }
+
+    .motion-circle {
+      flex:0 0 auto;
+      height:36vh; width:auto;
+      user-select:none; -webkit-user-drag:none;
+    }
+    .motion-project {
+      flex:0 0 auto;
+      background:none; border:none; padding:0; cursor:pointer;
+      height:72vh;
+      display:flex; align-items:center;
+    }
+    .motion-project img { height:100%; width:auto; display:block; -webkit-user-drag:none; }
+    .motion-project .mp-buka  { display:none; }
+    .motion-project.open .mp-tutup { display:none; }
+    .motion-project.open .mp-buka  { display:block; }
+
+    /* ═══════════ MERCH VIEW (hanging keychains/pins/stickers) ═══════════ */
+    #merch-view {
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 118%, #2a1060 0%, transparent 60%),
+        #08040f;
+    }
+    .merch-back {
+      position:absolute; top:1.4rem; left:50%;
+      transform:translateX(-50%);
+      background:none; border:none; cursor:pointer;
+      opacity:.8; transition:opacity .2s; z-index:6;
+    }
+    .merch-back img { height:.85rem; width:auto; display:block; }
+    .merch-back:hover { opacity:1; }
+    .merch-title {
+      position:absolute; top:3rem; left:50%;
+      transform:translateX(-50%);
+      height:4.6rem; width:auto; z-index:6;
+      pointer-events:none;
+    }
+
+    .merch-track {
+      position:absolute; inset:0;
+      overflow-x:auto; overflow-y:hidden;
+      -ms-overflow-style:none; scrollbar-width:none;
+    }
+    .merch-track::-webkit-scrollbar { display:none; }
+    .merch-strip {
+      position:relative; height:100%; width:max-content;
+      display:flex; align-items:flex-start; gap:4vw;
+      padding:18vh 9vw 0;
+    }
+    .merch-rod {              /* endless horizontal bar — overhangs both ends */
+      position:absolute; top:24vh; left:-100vw;
+      width:calc(100% + 100vw); height:3px;
+      background:#6a4bd0;
+      box-shadow:0 0 9px rgba(138,106,224,.7);
+      z-index:0;
+    }
+
+    .merch-item {
+      position:relative; z-index:1; flex:0 0 auto;
+      height:62vh;
+      transform-origin:top center;   /* swings like a pendulum on scroll */
+    }
+    .merch-item > .ungu,            /* keychain art */
+    .merch-item > .real,
+    .merch-item > .strap-bg,
+    .merch-item > .paper-bg {
+      display:block; height:100%; width:auto;
+    }
+    /* hover reveals the real artwork for the whole hanging unit */
+    .ungu, .real { transition:opacity .3s ease; }
+    .merch-item > .real { position:absolute; top:0; left:0; opacity:0; }
+    .merch-item:hover > .real { opacity:1; }
+    .merch-item:hover > .ungu { opacity:0; }
+
+    /* pins on a strap / stickers on paper — nested, positioned % of backing */
+    .pin, .sticker {
+      position:absolute; left:50%; transform:translateX(-50%);
+    }
+    .pin { width:74%; } .sticker { width:62%; }
+    .pin img, .sticker img { display:block; width:100%; height:auto; }
+    .pin .real, .sticker .real { position:absolute; top:0; left:0; opacity:0; }
+    .merch-item:hover .pin .real,
+    .merch-item:hover .sticker .real { opacity:1; }
+    .merch-item:hover .pin .ungu,
+    .merch-item:hover .sticker .ungu { opacity:0; }
+    .pin[data-pos="0"]     { top:30%; }
+    .pin[data-pos="1"]     { top:65%; }
+    .sticker[data-pos="0"] { top:25%; }
+    .sticker[data-pos="1"] { top:45%; left:70% }
+
+    .merch-fade {
+      position:absolute; top:0; height:100%; width:auto;
+      pointer-events:none; z-index:4;
+    }
+    .merch-fade.left  { left:0; }
+    .merch-fade.right { right:0; }
+
+    /* ═══════════ ILLUSTRATION VIEW (pannable collage) ═══════════ */
+    #illus-view { background:#050208; overflow:hidden; }
+    .illus-back {
+      position:absolute; top:1.4rem; left:50%;
+      transform:translateX(-50%);
+      background:none; border:none; cursor:pointer;
+      opacity:.8; transition:opacity .2s; z-index:8;
+    }
+    .illus-back img { height:.85rem; width:auto; display:block; }
+    .illus-back:hover { opacity:1; }
+
+    .illus-world {
+      position:absolute; top:50%; left:50%;
+      width:112vw; height:130vh;
+      transform:translate(-50%, -50%);
+      transition:transform .35s ease-out;   /* smooth camera pan */
+    }
+    .illus-marker, .illus-tile {
+      position:absolute;
+      transform:translate(-50%, -50%);
+      width:24vmin;
+    }
+    .illus-marker.wide, .illus-tile.wide { width:46vmin; }
+    .illus-marker { pointer-events:none; }
+    .illus-marker img { display:block; width:100%; height:auto; }
+
+    .illus-tile {
+      background:none; border:none; padding:0; cursor:pointer;
+    }
+    .illus-tile img { display:block; width:100%; height:auto; }
+    .illus-tile .ilus-clear {
+      position:absolute; top:0; left:0;
+      opacity:0; transition:opacity .3s ease;
+    }
+    .illus-tile:hover { z-index:6; }
+    .illus-tile:hover .ilus-clear { opacity:1; }
+
+    /* Lightbox — full illustration over a dimmed grid */
+    .illus-lightbox {
+      position:fixed; inset:0; z-index:20;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(5,2,8,.82);
+      opacity:1; transition:opacity .3s ease;
+    }
+    .illus-lightbox.hidden { opacity:0; pointer-events:none; }
+    .illus-lightbox img {
+      max-width:86vw; max-height:84vh;
+      width:auto; height:auto;
+      border-radius:.4rem;
+    }
+    .lb-close {
+      position:absolute; top:1.4rem; right:2rem;
+      background:none; border:none; cursor:pointer;
+      color:#eeebeb; font-size:1.4rem; opacity:.8; transition:opacity .2s;
+    }
+    .lb-close:hover { opacity:1; }
+
+    /* Empty state */
+    .empty-state {
+      position:absolute; inset:0;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:1.5rem;
+      text-align:center;
+    }
+    .empty-star {
+      font-size:3rem; color:#3a1789;
+      filter:drop-shadow(0 0 20px rgba(100,40,200,.5));
+    }
+    .empty-title {
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:1.2rem; letter-spacing:.3em;
+      text-transform:uppercase; opacity:.5;
+    }
+    .empty-back {
+      margin-top:.5rem;
+      background:none; border:1px solid rgba(200,200,200,.2);
+      color:#eeebeb; padding:.6rem 1.8rem;
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:.75rem; letter-spacing:.25em; text-transform:uppercase;
+      cursor:pointer; opacity:.65; transition:opacity .2s;
+    }
+    .empty-back:hover { opacity:1; }
+  </style>
+</head>
+<body>
+
+{isCollage ? (
+<!-- ══════════════════════════════
+     ILLUSTRATION VIEW (pannable collage)
+══════════════════════════════ -->
+<div id="illus-view" class="view">
+  <button class="illus-back" id="illus-back-btn">
+    <img src="/assets/uiux/Back.svg" alt="Back" />
+  </button>
+  <div class="illus-world" id="illus-world">
+    {ilusMarkers.map((m) => (
+      <img class:list={["illus-marker", { wide: m.wide }]} src={m.src} alt=""
+           style={`left:${m.x}%; top:${m.y}%`} />
+    ))}
+    {ilusTiles.map((t) => (
+      <button class:list={["illus-tile", { wide: wideSet.has(t.n) }]} type="button"
+              data-full={ilusFull(t.n)} style={`left:${t.x}%; top:${t.y}%`}>
+        <img class="ilus-blur"  src={ilusBlur(t.n)} alt="" />
+        <img class="ilus-clear" src={ilusClear(t.n)} alt="" />
+      </button>
+    ))}
+  </div>
+  <div class="illus-lightbox hidden" id="illus-lightbox">
+    <button class="lb-close" id="lb-close">✕</button>
+    <img id="lb-img" src="" alt="" />
+  </div>
+</div>
+) : isMerch ? (
+<!-- ══════════════════════════════
+     MERCH VIEW (hanging keychains/pins/stickers)
+══════════════════════════════ -->
+<div id="merch-view" class="view">
+  <button class="merch-back" id="merch-back-btn">
+    <img src="/assets/uiux/Back.svg" alt="Back" />
+  </button>
+  <img class="merch-title" src="/assets/merch/Merch.svg" alt="MERCH" />
+  <div class="merch-track" id="merch-track">
+    <div class="merch-strip" id="merch-strip">
+      <div class="merch-rod"></div>
+      {merchItems.map((item) => (
+        item.kind === 'keychain' ? (
+          <div class="merch-item">
+            <img class="ungu" src={item.ungu} alt="" />
+            <img class="real" src={item.real} alt="" />
+          </div>
+        ) : item.kind === 'strap' ? (
+          <div class="merch-item">
+            <img class="strap-bg" src="/assets/merch/Untuk pin.svg" alt="" />
+            {item.pins.map((p, i) => (
+              <div class="pin" data-pos={i}>
+                <img class="ungu" src={p.ungu} alt="" />
+                <img class="real" src={p.real} alt="" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div class="merch-item">
+            <img class="paper-bg" src="/assets/merch/Kertas untuk sticker.svg" alt="" />
+            {item.stickers.map((s, i) => (
+              <div class="sticker" data-pos={i}>
+                <img class="ungu" src={s.ungu} alt="" />
+                <img class="real" src={s.real} alt="" />
+              </div>
+            ))}
+          </div>
+        )
+      ))}
+    </div>
+  </div>
+  <img class="merch-fade left"  src="/assets/merch/Gradasi hitam kiri.svg" alt="" />
+  <img class="merch-fade right" src="/assets/merch/Gradasi hitam kanan.svg" alt="" />
+</div>
+) : isMotion ? (
+<!-- ══════════════════════════════
+     MOTION VIEW (horizontal timeline)
+══════════════════════════════ -->
+<div id="motion-view" class="view">
+  <img class="motion-bg" src="/assets/uiux/Background.svg" alt="" />
+  <button class="motion-back" id="motion-back-btn">
+    <img src="/assets/uiux/Back.svg" alt="Back" />
+  </button>
+  <div class="motion-track" id="motion-track">
+    {motionTimeline.map((item) => (
+      item.type === 'circle' ? (
+        <img class="motion-circle" src={item.src} alt="" />
+      ) : (
+        <button class="motion-project" type="button">
+          <img class="mp-tutup" src={item.tutup} alt="" />
+          <img class="mp-buka"  src={item.buka}  alt="" />
+        </button>
+      )
+    ))}
+  </div>
+</div>
+) : (
+<>
+<!-- ══════════════════════════════
+     PICKER VIEW
+══════════════════════════════ -->
+<div id="picker-view" class="view">
+
+  <!-- Left purple swirl -->
+  <div class="picker-left">
+    <img class="swirl-img" src="/assets/Spinner/Lingkaran.svg" alt="" />
+  </div>
+
+  <!-- Right gold constellation lines -->
+  <img class="gold-lines" src="/assets/Spinner/Garis kuning.svg" alt="" />
+
+  <!-- Header: category label + close -->
+  <div class="picker-header">
+    <span class="cat-chip">{data.label}</span>
+    <button class="picker-close" id="picker-back-btn">✕</button>
+  </div>
+
+  {data.projects.length > 0 ? (
+    <>
+      <div class="carousel-window">
+        <div class="carousel-track" id="carousel-track">
+          {data.projects.map((p, i) => (
+            <div class="c-item" data-idx={i} data-active={i === 0 ? 'true' : 'false'}>
+              <span class="c-star">
+                <img class="star-off" src="/assets/Spinner/Bintang Kuning.svg" alt="" />
+                <img class="star-on"  src="/assets/Spinner/Bintang Putih.svg" alt="" />
+              </span>
+              <span class="c-num">{p.num}</span>
+              <div class="c-info">
+                <div class="c-name">{p.name}</div>
+                <div class="c-year">{p.year}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="picker-footer" id="picker-tag"></div>
+    </>
+  ) : (
+    <div class="empty-state">
+      <span class="empty-star">✦</span>
+      <p class="empty-title">Coming Soon</p>
+      <button class="empty-back" id="empty-back-btn">← Back</button>
+    </div>
+  )}
+
+</div>
+
+<!-- ══════════════════════════════
+     SHOWCASE VIEW
+══════════════════════════════ -->
+<div id="showcase-view" class="view hidden">
+
+  <img class="sc-bg" src="/assets/uiux/Background.svg" alt="" />
+
+  <div class="sc-stage">
+    <img class="sc-screen" id="sc-screen" src="" alt="" />
+    <img class="sc-aset"   id="sc-aset"   src="" alt="" />
+
+    <!-- Character mode overlays -->
+    <img class="sc-variant" id="sc-variant" src="" alt="" />
+    <div class="sc-anim" id="sc-anim"><span>ANIMATION</span></div>
+    <img class="sc-nama" id="sc-nama" src="" alt="" />
+    <div class="sc-buttons" id="sc-buttons">
+      {tombolButtons.map((src, i) => (
+        <button class="sc-btn" data-k={i} type="button">
+          <img class="btn-num"  src={src} alt={`Variant ${i + 1}`} />
+          <img class="btn-star" src={bintangSrc} alt="" />
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <button class="showcase-back" id="showcase-back-btn">
+    <img src="/assets/uiux/Back.svg" alt="Back" />
+  </button>
+
+  <button class="nav-arrow left"  id="prev-btn">
+    <img src="/assets/uiux/Arrow Kiri.svg" alt="Previous" />
+  </button>
+  <button class="nav-arrow right" id="next-btn">
+    <img src="/assets/uiux/Arrow kanan.svg" alt="Next" />
+  </button>
+
+</div>
+</>
+)}
+
+<script define:vars={{ projectsJSON }}>
+(function () {
+  const projects = JSON.parse(projectsJSON);
+
+  /* ──────────────────────────────
+     PICKER
+  ────────────────────────────── */
+  const pickerView   = document.getElementById('picker-view');
+  const showcaseView = document.getElementById('showcase-view');
+  const track        = document.getElementById('carousel-track');
+  const tagEl        = document.getElementById('picker-tag');
+
+  let current = 0;
+  /* ─── Spinner geometry (tune these two) ─────────────────────────
+     Items sit on a wheel whose hub is HUB_X px to the LEFT (the swirl's
+     center). Each step from the active item rotates by STEP_DEG, so row
+     spacing, the leftward arc, and the tilt all derive from one rotation
+     — and the whole wheel appears to spin as you select. */
+  const STEP_DEG = 18;   // degrees of rotation per item
+  const HUB_X    = 900;  // px to the wheel hub (to the LEFT)
+
+  /* Items are server-rendered in the template (so they pick up scoped
+     styles); here we just wire clicks and position them. */
+  function buildTrack() {
+    if (!track) return;
+    track.querySelectorAll('.c-item').forEach((el, i) => {
+      el.addEventListener('click', () => {
+        if (i === current) openShowcase(i);
+        else { current = i; updateCarousel(); }
+      });
+    });
+    updateCarousel();
+  }
+
+  function updateCarousel() {
+    if (!track) return;
+    const items = track.querySelectorAll('.c-item');
+
+    items.forEach((el, i) => {
+      const offset = i - current;
+      const absOff = Math.abs(offset);
+
+      el.setAttribute('data-active', offset === 0 ? 'true' : 'false');
+      el.setAttribute('data-dist', String(absOff));
+
+      /* Rotate about the hub on the LEFT: items above swing up, below swing
+         down, all arcing leftward toward the swirl. The active item is
+         rotate(0) pinned to the track origin, so it never drifts. */
+      const angle = offset * STEP_DEG;
+      el.style.transformOrigin = `${-HUB_X}px 0`;
+      el.style.transform = `rotate(${angle}deg)`;
+      el.style.pointerEvents = absOff <= 1 ? 'auto' : 'none';
+    });
+
+    if (tagEl && projects[current]) tagEl.textContent = projects[current].tag;
+  }
+
+  /* One step per gesture: the CSS transition (.6s) drives the animation, so
+     we lock input until it settles to stop trackpads firing 10 steps at once. */
+  let stepLock = false;
+  function step(dir) {
+    if (stepLock) return;
+    const next = current + dir;
+    if (next < 0 || next > projects.length - 1) return;
+    current = next;
+    updateCarousel();
+    stepLock = true;
+    setTimeout(() => { stepLock = false; }, 480);
+  }
+
+  /* Keyboard navigation */
+  document.addEventListener('keydown', (e) => {
+    if (!pickerView || pickerView.classList.contains('hidden')) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      step(1);
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      step(-1);
+    } else if (e.key === 'Enter') {
+      openShowcase(current);
+    } else if (e.key === 'Escape') {
+      goHome();
+    }
+  });
+
+  /* Mouse-wheel navigation */
+  document.addEventListener('wheel', (e) => {
+    if (!pickerView || pickerView.classList.contains('hidden')) return;
+    e.preventDefault();
+    if (Math.abs(e.deltaY) < 4) return;
+    step(e.deltaY > 0 ? 1 : -1);
+  }, { passive: false });
+
+  /* Back buttons */
+  const pickerBackBtn = document.getElementById('picker-back-btn');
+  const emptyBackBtn  = document.getElementById('empty-back-btn');
+  if (pickerBackBtn) pickerBackBtn.addEventListener('click', goHome);
+  if (emptyBackBtn)  emptyBackBtn.addEventListener('click', goHome);
+
+  function goHome() { window.history.back(); }
+
+  /* ──────────────────────────────
+     SHOWCASE
+  ────────────────────────────── */
+  let showcaseIdx = 0;
+
+  const showcaseBack = document.getElementById('showcase-back-btn');
+  const prevBtn      = document.getElementById('prev-btn');
+  const nextBtn      = document.getElementById('next-btn');
+  const screenEl     = document.getElementById('sc-screen');
+  const asetEl       = document.getElementById('sc-aset');
+  const variantEl    = document.getElementById('sc-variant');
+  const animEl       = document.getElementById('sc-anim');
+  const namaEl       = document.getElementById('sc-nama');
+  const btnEls       = Array.from(document.querySelectorAll('.sc-btn'));
+
+  let curVariants = [];
+
+  function openShowcase(idx) {
+    showcaseIdx = idx;
+    renderShowcase();
+    pickerView.classList.add('hidden');
+    showcaseView.classList.remove('hidden');
+  }
+
+  function renderShowcase() {
+    const p = projects[showcaseIdx];
+    if (!p) return;
+
+    if (screenEl) { screenEl.src = p.screen; screenEl.alt = p.name; }
+
+    /* uiux: bobbing hero device */
+    if (asetEl) {
+      if (p.asset) {
+        asetEl.src = p.asset;
+        asetEl.style.display = '';
+        asetEl.style.setProperty('--ax', p.asetX + '%');
+        asetEl.style.setProperty('--ay', p.asetY + '%');
+        asetEl.style.setProperty('--aw', p.asetW + '%');
+      } else {
+        asetEl.style.display = 'none';
+        asetEl.removeAttribute('src');
+      }
+    }
+
+    /* character: overlaid title */
+    if (namaEl) {
+      if (p.nama) { namaEl.src = p.nama; namaEl.style.display = ''; }
+      else { namaEl.style.display = 'none'; namaEl.removeAttribute('src'); }
+    }
+
+    /* character: switchable portrait variants + numbered buttons */
+    curVariants = p.variants || [];
+    const hasVariants = curVariants.length > 0;
+    if (variantEl) variantEl.style.display = hasVariants ? '' : 'none';
+    if (animEl)    animEl.style.display    = hasVariants ? '' : 'none';
+    btnEls.forEach((b, k) => { b.style.display = k < curVariants.length ? '' : 'none'; });
+    if (hasVariants) selectVariant(0);
+
+    /* Leftmost has no left arrow, rightmost has no right arrow. */
+    if (prevBtn) prevBtn.classList.toggle('hidden-arrow', showcaseIdx === 0);
+    if (nextBtn) nextBtn.classList.toggle('hidden-arrow', showcaseIdx === projects.length - 1);
+  }
+
+  /* Switch the displayed portrait; pressed button turns into its star. */
+  function selectVariant(k) {
+    if (k < 0 || k >= curVariants.length) return;
+    if (variantEl) variantEl.src = curVariants[k];
+    if (animEl) animEl.setAttribute('data-variant', String(k + 1)); /* ready for animation swap */
+    btnEls.forEach((b, i) => b.classList.toggle('selected', i === k));
+  }
+
+  btnEls.forEach((b, k) => b.addEventListener('click', () => selectVariant(k)));
+
+  function closeShowcase() {
+    showcaseView.classList.add('hidden');
+    pickerView.classList.remove('hidden');
+    current = showcaseIdx;
+    updateCarousel();
+  }
+
+  if (showcaseBack) showcaseBack.addEventListener('click', closeShowcase);
+
+  if (prevBtn) prevBtn.addEventListener('click', () => {
+    if (showcaseIdx > 0) { showcaseIdx--; renderShowcase(); }
+  });
+  if (nextBtn) nextBtn.addEventListener('click', () => {
+    if (showcaseIdx < projects.length - 1) { showcaseIdx++; renderShowcase(); }
+  });
+
+  /* Keyboard in showcase */
+  document.addEventListener('keydown', (e) => {
+    if (!showcaseView || showcaseView.classList.contains('hidden')) return;
+    if (e.key === 'ArrowRight') { if (showcaseIdx < projects.length - 1) { showcaseIdx++; renderShowcase(); } }
+    else if (e.key === 'ArrowLeft') { if (showcaseIdx > 0) { showcaseIdx--; renderShowcase(); } }
+    else if (e.key === 'Escape') { closeShowcase(); }
+  });
+
+  /* ──────────────────────────────
+     MOTION TIMELINE
+  ────────────────────────────── */
+  const motionTrack = document.getElementById('motion-track');
+  if (motionTrack) {
+    /* Vertical wheel scrolls the timeline horizontally. */
+    motionTrack.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      motionTrack.scrollLeft += e.deltaY;
+    }, { passive: false });
+
+    /* Click a pill to expand/collapse it (tutup ↔ buka). */
+    motionTrack.querySelectorAll('.motion-project').forEach((el) => {
+      el.addEventListener('click', () => {
+        const wasOpen = el.classList.contains('open');
+        motionTrack.querySelectorAll('.motion-project.open').forEach((o) => o.classList.remove('open'));
+        if (!wasOpen) {
+          el.classList.add('open');
+          el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      });
+    });
+
+    const motionBack = document.getElementById('motion-back-btn');
+    if (motionBack) motionBack.addEventListener('click', () => window.history.back());
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') window.history.back();
+    });
+  }
+
+  /* ──────────────────────────────
+     MERCH TIMELINE (hang + jiggle)
+  ────────────────────────────── */
+  const merchTrack = document.getElementById('merch-track');
+  if (merchTrack) {
+    const items = Array.from(merchTrack.querySelectorAll('.merch-item'));
+
+    /* Vertical wheel scrolls horizontally. */
+    merchTrack.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      merchTrack.scrollLeft += e.deltaY;
+    }, { passive: false });
+
+    /* Pendulum jiggle: items lean with scroll velocity, then ease back. */
+    const MAX = 13, K = 0.45, EASE = 0.12;
+    let last = merchTrack.scrollLeft, angle = 0;
+    function tick() {
+      const sl = merchTrack.scrollLeft;
+      const v = sl - last; last = sl;
+      const target = Math.max(-MAX, Math.min(MAX, v * K));
+      angle += (target - angle) * EASE;
+      if (Math.abs(angle) < 0.01) angle = 0;
+      const t = 'rotate(' + angle.toFixed(2) + 'deg)';
+      for (const it of items) it.style.transform = t;
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    const merchBack = document.getElementById('merch-back-btn');
+    if (merchBack) merchBack.addEventListener('click', () => window.history.back());
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.history.back(); });
+  }
+
+  /* ──────────────────────────────
+     ILLUSTRATION (pan + lightbox)
+  ────────────────────────────── */
+  const illusWorld = document.getElementById('illus-world');
+  if (illusWorld) {
+    /* Pan up to the world's overhang so edges just reach, never past it.
+       world is 112vw×130vh → overhang 6vw / 15vh each side. */
+    const RANGE_X = 6, RANGE_Y = 15;
+    document.addEventListener('mousemove', (e) => {
+      const nx = (e.clientX / window.innerWidth - 0.5) * 2;   // -1..1
+      const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+      const px = (-nx * RANGE_X).toFixed(2);  // mouse right → reveal right edge
+      const py = (-ny * RANGE_Y).toFixed(2);
+      illusWorld.style.transform =
+        `translate(-50%, -50%) translate(${px}vw, ${py}vh)`;
+    });
+
+    /* Click a tile → full illustration in the lightbox. */
+    const lightbox = document.getElementById('illus-lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbClose = document.getElementById('lb-close');
+    illusWorld.querySelectorAll('.illus-tile').forEach((tile) => {
+      tile.addEventListener('click', () => {
+        lbImg.src = tile.getAttribute('data-full');
+        lightbox.classList.remove('hidden');
+      });
+    });
+    function closeLightbox() { lightbox.classList.add('hidden'); lbImg.removeAttribute('src'); }
+    if (lbClose) lbClose.addEventListener('click', closeLightbox);
+    if (lightbox) lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+
+    const illusBack = document.getElementById('illus-back-btn');
+    if (illusBack) illusBack.addEventListener('click', () => window.history.back());
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (lightbox && !lightbox.classList.contains('hidden')) closeLightbox();
+        else window.history.back();
+      }
+    });
+  }
+
+  /* Init */
+  if (projects.length > 0) buildTrack();
+})();
+</script>
+</body>
+</html>
