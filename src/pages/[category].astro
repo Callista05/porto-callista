@@ -16,9 +16,10 @@ type Project = {
   /* uiux: hero device that bobs above the title */
   asset?: string;
   asetX?: number; asetY?: number; asetW?: number;
-  /* character: overlaid title image + switchable portrait variants */
+  /* character: overlaid title image + switchable portrait variants + webm animations */
   nama?: string;
   variants?: string[];
+  animations?: string[];
 };
 type CatData = { label: string; projects: Project[] };
 
@@ -102,6 +103,7 @@ const allData: Record<string, CatData> = {
         screen: '/assets/character/01 Kidjo/Kidjo screen.svg',
         nama:   '/assets/character/01 Kidjo/Kidjo nama.svg',
         variants: [],
+        animations: ['/assets/character/01 Kidjo/animation/mascot.webm'],
       },
       {
         id: 'yokai', num: '02', name: 'YOKAI UKJ', year: '2025', tag: '',
@@ -114,6 +116,14 @@ const allData: Record<string, CatData> = {
           '/assets/character/02 Yokai UKJ/yokai/Yokai 4.svg',
           '/assets/character/02 Yokai UKJ/yokai/Ykai 5.svg',
           '/assets/character/02 Yokai UKJ/yokai/Yokai 6.svg',
+        ],
+        animations: [
+          '/assets/character/02 Yokai UKJ/animation/yokai 1/UKJ yokai 1.webm',
+          '/assets/character/02 Yokai UKJ/animation/yokai 2/UKJ yokai 2.webm',
+          '/assets/character/02 Yokai UKJ/animation/yokai 3/UKJ yokai 3.webm',
+          '/assets/character/02 Yokai UKJ/animation/yokai 4/UKJ yokai 4.webm',
+          '/assets/character/02 Yokai UKJ/animation/yokai 5/UKJ yokai 5.webm',
+          '/assets/character/02 Yokai UKJ/animation/yokai 6/UKJ yokai 6.webm',
         ],
       },
       {
@@ -128,6 +138,15 @@ const allData: Record<string, CatData> = {
           '/assets/character/03 Ichinose aoi/ichinose/Ichinose 5.svg',
           '/assets/character/03 Ichinose aoi/ichinose/Ichinose 6.svg',
           '/assets/character/03 Ichinose aoi/ichinose/Ichinose 7.svg',
+        ],
+        animations: [
+          '/assets/character/03 Ichinose aoi/animation/Ichinose 1/1.webm',
+          '/assets/character/03 Ichinose aoi/animation/Ichinose 2/2.webm',
+          '/assets/character/03 Ichinose aoi/animation/Ichinose 3/3.webm',
+          '/assets/character/03 Ichinose aoi/animation/Ichinose 4/4.webm',
+          '/assets/character/03 Ichinose aoi/animation/ichinose 5/5.webm',
+          '/assets/character/03 Ichinose aoi/animation/ichinose 6/6.webm',
+          '/assets/character/03 Ichinose aoi/animation/ichinose 7/7.webm',
         ],
       },
       {
@@ -144,6 +163,16 @@ const allData: Record<string, CatData> = {
           '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 7.svg',
           '/assets/character/04 Ku jaya hyang/Ku jaya/Ku jaya 8.svg',
         ],
+        animations: [
+          '/assets/character/04 Ku jaya hyang/animation/Ku jaya 1/ku jaya 1.webm',
+          '/assets/character/04 Ku jaya hyang/animation/Ku jaya 2/Ku jaya 2.webm',
+          '/assets/character/04 Ku jaya hyang/animation/Ku jaya 3/Ku jaya 3.webm',
+          '/assets/character/04 Ku jaya hyang/animation/Ku jaya 4/Ku jaya 4.webm',
+          '/assets/character/04 Ku jaya hyang/animation/Ku jaya 5/Ku jaya 5.webm',
+          '/assets/character/04 Ku jaya hyang/animation/Ku jaya 6/Ku jaya 6.webm',
+          '/assets/character/04 Ku jaya hyang/animation/Ku jaya 7/Ku jaya 7.webm',
+          '/assets/character/04 Ku jaya hyang/animation/Ku jaya 8/Ku jaya 8.webm',
+        ],
       },
       {
         id: 'fujiwara', num: '05', name: 'FUJIWARA HARU', year: '2025', tag: '',
@@ -158,6 +187,15 @@ const allData: Record<string, CatData> = {
           '/assets/character/05 Fujiwara haru/Fujiwara/Fujiwara 6.svg',
           '/assets/character/05 Fujiwara haru/Fujiwara/Fujiwara 7.svg',
         ],
+        animations: [
+          '/assets/character/05 Fujiwara haru/animation/Fujiwara 1/1.webm',
+          '/assets/character/05 Fujiwara haru/animation/Fujiwara 2/2.webm',
+          '/assets/character/05 Fujiwara haru/animation/Fujiwara 3/3.webm',
+          '/assets/character/05 Fujiwara haru/animation/Fujiwara 4/4.webm',
+          '/assets/character/05 Fujiwara haru/animation/Fujiwara 5/5.webm',
+          '/assets/character/05 Fujiwara haru/animation/Fujiwara 6/6.webm',
+          '/assets/character/05 Fujiwara haru/animation/Fujiwara 7/7.webm',
+        ],
       },
       {
         id: 'mumei', num: '06', name: 'MUMEI', year: '2025', tag: '',
@@ -171,6 +209,14 @@ const allData: Record<string, CatData> = {
           '/assets/character/06 Mumei/Mumei/Mumei 5.svg',
           '/assets/character/06 Mumei/Mumei/Mumei 6.svg',
         ],
+        animations: [
+          '/assets/character/06 Mumei/animation/mumei 1/1.webm',
+          '/assets/character/06 Mumei/animation/Mumei 2/2.webm',
+          '/assets/character/06 Mumei/animation/Mumei 3/3.webm',
+          '/assets/character/06 Mumei/animation/Mumei 4/4.webm',
+          '/assets/character/06 Mumei/animation/Mumei 5/5.webm',
+          '/assets/character/06 Mumei/animation/Mumei 6/6.webm',
+        ],
       },
       {
         id: 'adhesive', num: '07', name: 'ADHESIVE', year: '2025', tag: '',
@@ -182,12 +228,19 @@ const allData: Record<string, CatData> = {
           '/assets/character/07 Adhesive/Adhesive/Sid 3.svg',
           '/assets/character/07 Adhesive/Adhesive/Zinc 4.svg',
         ],
+        animations: [
+          '/assets/character/07 Adhesive/animation/1 Travis/Travis gerak.webm',
+          '/assets/character/07 Adhesive/animation/2 Tikky/Tikky gerak.webm',
+          '/assets/character/07 Adhesive/animation/3 Sid/Sid gerak.webm',
+          '/assets/character/07 Adhesive/animation/4 Zinc/Zinc gerak.webm',
+        ],
       },
       {
         id: 'prima', num: '08', name: 'PRIMA', year: '2025', tag: '',
         screen: '/assets/character/08 Prima/Prima screen.svg',
         nama:   '/assets/character/08 Prima/Prima nama.svg',
         variants: [],
+        animations: ['/assets/character/08 Prima/animation/Prima/Prima tia.webm'],
       },
     ],
   },
@@ -510,35 +563,28 @@ const motionTimeline: MotionItem[] = [
     /* ─── Character mode overlays (title + switchable portrait + buttons) ─── */
     .sc-variant {            /* switchable portrait, left */
       position:absolute;
-      left:21%; top:34%;
+      left:35%; top:30%;
       width:24%; height:auto;
       transform:translate(-50%, -50%);
     }
     .sc-nama {               /* title image, top-right above the description */
       position:absolute;
-      left:71%; top:27%;
+      left:80%; top:27%;
       width:32%; height:auto;
       transform:translate(-50%, -50%);
     }
-    .sc-anim {               /* animation placeholder, middle */
+    .sc-anim {               /* per-variant webm animation, middle (portrait) */
       position:absolute;
-      left:45%; top:52%;
-      width:20%; height:46%;
+      left:50%; top:52%;
+      height:54%; width:auto;
       transform:translate(-50%, -50%);
-      border:2px dashed rgba(206,149,102,.35);
-      border-radius:1rem;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .sc-anim span {
-      font-family:'Barlow Condensed',sans-serif;
-      font-size:.7rem; letter-spacing:.3em;
-      color:rgba(206,149,102,.5);
+      object-fit:contain;
     }
     .sc-buttons {            /* variant buttons, under the portrait */
       position:absolute;
-      left:21%; top:74%;
+      left:33%; top:60%;
       transform:translateX(-50%);
-      width:17%;
+      width:20%;
       display:flex; flex-wrap:wrap; gap:.55rem;
       justify-content:center;
     }
@@ -944,7 +990,7 @@ const motionTimeline: MotionItem[] = [
 
     <!-- Character mode overlays -->
     <img class="sc-variant" id="sc-variant" src="" alt="" />
-    <div class="sc-anim" id="sc-anim"><span>ANIMATION</span></div>
+    <video class="sc-anim" id="sc-anim" autoplay loop muted playsinline></video>
     <img class="sc-nama" id="sc-nama" src="" alt="" />
     <div class="sc-buttons" id="sc-buttons">
       {tombolButtons.map((src, i) => (
@@ -1089,6 +1135,7 @@ const motionTimeline: MotionItem[] = [
   const btnEls       = Array.from(document.querySelectorAll('.sc-btn'));
 
   let curVariants = [];
+  let curAnimations = [];
 
   function openShowcase(idx) {
     showcaseIdx = idx;
@@ -1123,24 +1170,34 @@ const motionTimeline: MotionItem[] = [
       else { namaEl.style.display = 'none'; namaEl.removeAttribute('src'); }
     }
 
-    /* character: switchable portrait variants + numbered buttons */
+    /* character: switchable portrait variants + numbered buttons + webm animation */
     curVariants = p.variants || [];
+    curAnimations = p.animations || [];
     const hasVariants = curVariants.length > 0;
+    const hasAnim = curAnimations.length > 0;
     if (variantEl) variantEl.style.display = hasVariants ? '' : 'none';
-    if (animEl)    animEl.style.display    = hasVariants ? '' : 'none';
+    if (animEl)    animEl.style.display    = hasAnim ? '' : 'none';
     btnEls.forEach((b, k) => { b.style.display = k < curVariants.length ? '' : 'none'; });
-    if (hasVariants) selectVariant(0);
+    if (hasVariants || hasAnim) selectVariant(0);   /* no-variant projects (Kidjo/Prima) still get their animation */
+    else if (animEl) animEl.removeAttribute('src');
 
     /* Leftmost has no left arrow, rightmost has no right arrow. */
     if (prevBtn) prevBtn.classList.toggle('hidden-arrow', showcaseIdx === 0);
     if (nextBtn) nextBtn.classList.toggle('hidden-arrow', showcaseIdx === projects.length - 1);
   }
 
-  /* Switch the displayed portrait; pressed button turns into its star. */
+  /* Switch the displayed portrait + animation; pressed button turns into its star. */
   function selectVariant(k) {
-    if (k < 0 || k >= curVariants.length) return;
-    if (variantEl) variantEl.src = curVariants[k];
-    if (animEl) animEl.setAttribute('data-variant', String(k + 1)); /* ready for animation swap */
+    if (k < 0) return;
+    if (variantEl && k < curVariants.length) variantEl.src = curVariants[k];
+    if (animEl && curAnimations[k]) {
+      if (animEl.getAttribute('src') !== curAnimations[k]) {
+        animEl.src = curAnimations[k];
+        animEl.load();
+      }
+      const playP = animEl.play();
+      if (playP && playP.catch) playP.catch(() => {});
+    }
     btnEls.forEach((b, i) => b.classList.toggle('selected', i === k));
   }
 
